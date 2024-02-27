@@ -1,3 +1,3 @@
 export class CloseAccountCommand {
-  public id: string
+    public id: string | undefined
 }

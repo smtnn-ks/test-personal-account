@@ -1,3 +1,3 @@
 export interface NotificationService<TIn = string> {
-  sendWelcomeMessage(account: TIn)
+    sendWelcomeMessage(account: TIn): void
 }

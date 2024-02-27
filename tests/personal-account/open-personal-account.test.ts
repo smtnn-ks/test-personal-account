@@ -1,67 +1,68 @@
 import {
-  Account,
-  AccountError,
-  AccountManager,
-  OpenAccountCommand,
-  NotificationService
+    Account,
+    AccountError,
+    AccountManager,
+    OpenAccountCommand,
+    NotificationService
 } from "../../source/personal-account";
+import { Implementation } from "../../source/personal-account/try";
 
 
 describe('Personal-Account: OpenAccount', () => {
-  const notificationService: NotificationService;
-  const manager: AccountManager;
+    const notificationService: NotificationService = { sendWelcomeMessage: jest.fn(x => console.log(x)) }
+    const manager: AccountManager = new Implementation(notificationService);
 
-  test('Should successfully open a personal account', async() => {
-    const command = new OpenAccountCommand();
-    command.email = "customer1@domain.ru";
-    command.name = "Ярославцев Николай Сереевич";
+    test('Should successfully open a personal account', async () => {
+        const command = new OpenAccountCommand();
+        command.email = "customer1@domain.ru";
+        command.name = "Ярославцев Николай Сереевич";
 
-    const account = await manager.openAccount(command);
+        const account = await manager.openAccount(command);
 
-    expect(account).toBeInstanceOf(Account);
-    expect(account).toEqual(
-      expect.objectContaining({
-        id: expect.any(String),
-        email: "customer1@domain.ru",
-        name: "Ярославцев Николай Сереевич",
-        number: expect.any(String),
-        status: "Open"
-      })
-    );
-    expect(notificationService.sendWelcomeMessage).toBeCalledTimes(1);
-  });
+        expect(account).toBeInstanceOf(Account);
+        expect(account).toEqual(
+            expect.objectContaining({
+                id: expect.any(String),
+                email: "customer1@domain.ru",
+                name: "Ярославцев Николай Сереевич",
+                number: expect.any(String),
+                status: "Open"
+            })
+        );
+        expect(notificationService.sendWelcomeMessage).toBeCalledTimes(1);
+    });
 
-  test('Should throw an error for empty name', async () => {
-    try {
-      const command = new OpenAccountCommand();
-      command.email = "customer1@domain.ru";
+    test('Should throw an error for empty name', async () => {
+        try {
+            const command = new OpenAccountCommand();
+            command.email = "customer1@domain.ru";
 
-      const account = await manager.openAccount(command);
-    } catch (e) {
-      expect(e).toBeInstanceOf(AccountError);
-    }
-  });
+            const account = await manager.openAccount(command);
+        } catch (e) {
+            expect(e).toBeInstanceOf(AccountError);
+        }
+    });
 
-  test('Should throw an error for empty email address', async () => {
-    try {
-      const command = new OpenAccountCommand();
-      command.name = "Костюшин Дмитрий Анатольевич";
+    test('Should throw an error for empty email address', async () => {
+        try {
+            const command = new OpenAccountCommand();
+            command.name = "Костюшин Дмитрий Анатольевич";
 
-      const account = await manager.openAccount(command);
-    } catch (e) {
-      expect(e).toBeInstanceOf(AccountError);
-    }
-  });
+            const account = await manager.openAccount(command);
+        } catch (e) {
+            expect(e).toBeInstanceOf(AccountError);
+        }
+    });
 
-  test('Should throw an error for incorrect email address', async () => {
-    try {
-      const command = new OpenAccountCommand();
-      command.name = "Костюшин Дмитрий Анатольевич";
-      command.email = "domain.ru";
+    test('Should throw an error for incorrect email address', async () => {
+        try {
+            const command = new OpenAccountCommand();
+            command.name = "Костюшин Дмитрий Анатольевич";
+            command.email = "domain.ru";
 
-      const account = await manager.openAccount(command);
-    } catch (e) {
-      expect(e).toBeInstanceOf(AccountError);
-    }
-  });
+            const account = await manager.openAccount(command);
+        } catch (e) {
+            expect(e).toBeInstanceOf(AccountError);
+        }
+    });
 });
